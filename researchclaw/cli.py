@@ -34,6 +34,9 @@ def cmd_run(args: argparse.Namespace) -> int:
     if not config_path.exists():
         print(f"Error: config file not found: {config_path}", file=sys.stderr)
         return 1
+    if not config_path.is_file():
+        print(f"Error: config path is not a file: {config_path}", file=sys.stderr)
+        return 1
 
     kb_root_path = None
     config = RCConfig.load(config_path, check_paths=False)
@@ -114,9 +117,16 @@ def cmd_validate(args: argparse.Namespace) -> int:
     if not config_path.exists():
         print(f"Error: config file not found: {config_path}", file=sys.stderr)
         return 1
+    if not config_path.is_file():
+        print(f"Error: config path is not a file: {config_path}", file=sys.stderr)
+        return 1
 
-    with config_path.open(encoding="utf-8") as f:
-        loaded = cast(object, yaml.safe_load(f))
+    try:
+        with config_path.open(encoding="utf-8") as f:
+            loaded = cast(object, yaml.safe_load(f))
+    except OSError as exc:
+        print(f"Error: could not read config file: {exc}", file=sys.stderr)
+        return 1
 
     if loaded is None:
         data: dict[str, object] = {}

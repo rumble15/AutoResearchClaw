@@ -77,6 +77,24 @@ def test_cmd_run_missing_config_returns_one(
     assert "config file not found" in capsys.readouterr().err
 
 
+def test_cmd_run_directory_config_returns_one(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    args = argparse.Namespace(
+        config=str(tmp_path),
+        topic=None,
+        output=None,
+        from_stage=None,
+        auto_approve=False,
+        skip_preflight=True,
+        resume=False,
+        skip_noncritical_stage=False,
+    )
+    code = rc_cli.cmd_run(args)
+    assert code == 1
+    assert "config path is not a file" in capsys.readouterr().err
+
+
 def test_cmd_validate_missing_config_returns_one(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -86,6 +104,15 @@ def test_cmd_validate_missing_config_returns_one(
     code = rc_cli.cmd_validate(args)
     assert code == 1
     assert "config file not found" in capsys.readouterr().err
+
+
+def test_cmd_validate_directory_config_returns_one(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    args = argparse.Namespace(config=str(tmp_path), no_check_paths=False)
+    code = rc_cli.cmd_validate(args)
+    assert code == 1
+    assert "config path is not a file" in capsys.readouterr().err
 
 
 def test_cmd_validate_valid_config_returns_zero(
