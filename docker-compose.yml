@@ -3,7 +3,7 @@
 #
 # Quick start:
 #   1. cp .env.example .env          # fill in your API key(s)
-#   2. cp config.researchclaw.example.yaml config.arc.yaml
+#   2. (optional) cp config.researchclaw.example.yaml config.arc.yaml
 #      # edit config.arc.yaml — set llm.primary_model etc. if needed
 #   3. docker compose up researchclaw
 #
@@ -33,8 +33,8 @@ services:
       - PYTHONUNBUFFERED=1
 
     volumes:
-      # Configuration file (must exist before running — copy from example)
-      - ./config.arc.yaml:/app/config.arc.yaml:ro
+      # Configuration file (defaults to repo example; override with RC_CONFIG_FILE)
+      - ${RC_CONFIG_FILE:-./config.researchclaw.example.yaml}:/app/config.arc.yaml:ro
       # Persist research artifacts across runs
       - ./artifacts:/app/artifacts
       # Persist the knowledge base across runs

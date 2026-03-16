@@ -27,6 +27,8 @@ RUN pip install --no-cache-dir -e .
 
 # Default config and prompts
 COPY config.researchclaw.example.yaml ./
+RUN cp /app/config.researchclaw.example.yaml /app/config.arc.yaml && \
+    cp /app/config.researchclaw.example.yaml /app/config.yaml
 COPY prompts.default.yaml ./
 
 # Artifacts and knowledge-base directories
