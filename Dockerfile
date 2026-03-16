@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Install Python dependencies first (layer cache)
-COPY pyproject.toml ./
+# README.md is required because pyproject.toml references it as project.readme.
+COPY pyproject.toml README.md ./
 RUN pip install --no-cache-dir hatchling && \
     pip install --no-cache-dir pyyaml rich
 
