@@ -31,6 +31,7 @@ user_token_cache.json
 *.secret
 .env
 .env.*
+!.env.example
 config_run*.yaml
 
 # Literature search cache

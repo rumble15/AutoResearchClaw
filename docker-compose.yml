@@ -1,0 +1,70 @@
+# ============================================================================
+# AutoResearchClaw — docker-compose.yml
+#
+# Quick start:
+#   1. cp .env.example .env          # fill in your API key(s)
+#   2. cp config.researchclaw.example.yaml config.arc.yaml
+#      # edit config.arc.yaml — set llm.primary_model etc. if needed
+#   3. docker compose up researchclaw
+#
+# To build the experiment sandbox image as well:
+#   docker compose build
+# ============================================================================
+
+services:
+
+  # --------------------------------------------------------------------------
+  # researchclaw — main autonomous research pipeline
+  # --------------------------------------------------------------------------
+  researchclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: researchclaw/app:latest
+    container_name: researchclaw
+
+    # Pass API keys from the host environment / .env file
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - S2_API_KEY=${S2_API_KEY:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+      - PYTHONUNBUFFERED=1
+
+    volumes:
+      # Configuration file (must exist before running — copy from example)
+      - ./config.arc.yaml:/app/config.arc.yaml:ro
+      # Persist research artifacts across runs
+      - ./artifacts:/app/artifacts
+      # Persist the knowledge base across runs
+      - ./docs/kb:/app/docs/kb
+      # Mount Docker socket so the pipeline can launch experiment containers
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    # Run the full pipeline; override RESEARCH_TOPIC in .env or with:
+    #   docker compose run researchclaw run --topic "My topic" --auto-approve
+    command:
+      - run
+      - --config
+      - config.arc.yaml
+      - --topic
+      - ${RESEARCH_TOPIC:-REPLACE_WITH_YOUR_RESEARCH_TOPIC}
+      - --auto-approve
+
+    restart: "no"
+
+  # --------------------------------------------------------------------------
+  # experiment-sandbox — GPU-enabled Docker image used internally by the
+  # pipeline to execute generated experiment code in isolation.
+  # Build it once with:  docker compose build experiment-sandbox
+  # The pipeline references it via config: experiment.docker.image
+  # --------------------------------------------------------------------------
+  experiment-sandbox:
+    build:
+      context: researchclaw/docker
+      dockerfile: Dockerfile
+    image: researchclaw/experiment:latest
+    # This service is only built, not started directly.
+    profiles:
+      - build-sandbox
