@@ -10,6 +10,8 @@ from pathlib import Path
 from collections.abc import Mapping
 from typing import cast
 
+import yaml
+
 from researchclaw.adapters import AdapterBundle
 from researchclaw.config import RCConfig
 from researchclaw.health import print_doctor_report, run_doctor, write_doctor_report
@@ -39,7 +41,11 @@ def cmd_run(args: argparse.Namespace) -> int:
         return 1
 
     kb_root_path = None
-    config = RCConfig.load(config_path, check_paths=False)
+    try:
+        config = RCConfig.load(config_path, check_paths=False)
+    except (OSError, ValueError, yaml.YAMLError) as exc:
+        print(f"Error: invalid config file: {exc}", file=sys.stderr)
+        return 1
 
     if topic:
         import dataclasses
@@ -110,7 +116,6 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 def cmd_validate(args: argparse.Namespace) -> int:
     from researchclaw.config import validate_config
-    import yaml
 
     config_path = Path(cast(str, args.config))
     no_check_paths = cast(bool, args.no_check_paths)
@@ -124,6 +129,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
     try:
         with config_path.open(encoding="utf-8") as f:
             loaded = cast(object, yaml.safe_load(f))
+    except yaml.YAMLError as exc:
+        print(f"Error: could not parse config file: {exc}", file=sys.stderr)
+        return 1
     except OSError as exc:
         print(f"Error: could not read config file: {exc}", file=sys.stderr)
         return 1
