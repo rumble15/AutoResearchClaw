@@ -36,13 +36,8 @@ openclaw_bridge:
   use_browser: false
 
 llm:
-  provider: "openai-compatible"
-  base_url: "https://openai-api.shenmishajing.workers.dev/v1"
-  api_key: "r685RxDQ3lYYWC8nOH5SUDlLZEkutddM"
-  api_key_env: "RESEARCHCLAW_API_KEY"
-  primary_model: "gpt-4o"
-  fallback_models:
-    - "gpt-4.1"
+  provider: "openrouter"
+  primary_model: "minimax/minimax-m2.5:free"
 
 security:
   hitl_required_stages: []
