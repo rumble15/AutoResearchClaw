@@ -126,7 +126,7 @@ def test_cmd_validate_valid_config_returns_zero(
     assert "Config validation passed" in capsys.readouterr().out
 
 
-def test_cmd_validate_malformed_yaml_returns_one(
+def test_cmd_validate_malformed_yaml_exits_with_one(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     config_path = tmp_path / "config.yaml"
@@ -137,7 +137,7 @@ def test_cmd_validate_malformed_yaml_returns_one(
     assert "could not parse config file" in capsys.readouterr().err
 
 
-def test_cmd_run_malformed_yaml_returns_one(
+def test_cmd_run_malformed_yaml_exits_with_one(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     config_path = tmp_path / "config.yaml"
@@ -154,7 +154,7 @@ def test_cmd_run_malformed_yaml_returns_one(
     )
     code = rc_cli.cmd_run(args)
     assert code == 1
-    assert "invalid config file" in capsys.readouterr().err
+    assert "could not parse config file" in capsys.readouterr().err
 
 
 def test_main_dispatches_run_command(monkeypatch: pytest.MonkeyPatch) -> None:

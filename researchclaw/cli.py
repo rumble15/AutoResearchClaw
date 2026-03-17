@@ -43,7 +43,13 @@ def cmd_run(args: argparse.Namespace) -> int:
     kb_root_path = None
     try:
         config = RCConfig.load(config_path, check_paths=False)
-    except (OSError, ValueError, yaml.YAMLError) as exc:
+    except yaml.YAMLError as exc:
+        print(f"Error: could not parse config file: {exc}", file=sys.stderr)
+        return 1
+    except OSError as exc:
+        print(f"Error: could not read config file: {exc}", file=sys.stderr)
+        return 1
+    except ValueError as exc:
         print(f"Error: invalid config file: {exc}", file=sys.stderr)
         return 1
 
