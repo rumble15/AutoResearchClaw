@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import urllib.error
 import urllib.request
+from email.message import Message
 from types import SimpleNamespace
 from typing import Any, Mapping
 
@@ -321,3 +323,25 @@ def test_chat_uses_fallback_after_first_model_error(monkeypatch: pytest.MonkeyPa
     response = client.chat([{"role": "user", "content": "x"}])
     assert calls == ["gpt-5.2", "gpt-5.1"]
     assert response.model == "gpt-5.1"
+
+
+def test_chat_does_not_fallback_on_401(monkeypatch: pytest.MonkeyPatch):
+    calls: list[str] = []
+
+    def fake_call_with_retry(
+        self: LLMClient,
+        model: str,
+        messages: list[dict[str, str]],
+        max_tokens: int,
+        temperature: float,
+        json_mode: bool,
+    ) -> LLMResponse:
+        _ = (self, messages, max_tokens, temperature, json_mode)
+        calls.append(model)
+        raise urllib.error.HTTPError("url", 401, "Unauthorized", Message(), None)
+
+    monkeypatch.setattr(LLMClient, "_call_with_retry", fake_call_with_retry)
+    client = _make_client(primary_model="gpt-4o", fallback_models=["gpt-4.1"])
+    with pytest.raises(urllib.error.HTTPError):
+        client.chat([{"role": "user", "content": "x"}])
+    assert calls == ["gpt-4o"]
