@@ -37,5 +37,8 @@ COPY prompts.default.yaml ./
 # Artifacts and knowledge-base directories
 RUN mkdir -p /app/artifacts /app/docs/kb
 
-ENTRYPOINT ["researchclaw"]
+COPY scripts/docker-entrypoint.sh /app/scripts/docker-entrypoint.sh
+RUN chmod +x /app/scripts/docker-entrypoint.sh
+
+ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]
 CMD ["--help"]
