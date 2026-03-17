@@ -131,6 +131,8 @@ class LLMClient:
             try:
                 return self._call_with_retry(m, messages, max_tok, temp, json_mode)
             except Exception as exc:  # noqa: BLE001
+                if isinstance(exc, urllib.error.HTTPError) and exc.code == 401:
+                    raise
                 logger.warning("Model %s failed: %s. Trying next.", m, exc)
                 last_error = exc
 
