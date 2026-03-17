@@ -37,9 +37,9 @@ services:
       #- type: bind
        # source: ${RC_CONFIG_FILE}
         #target: /app/config.arc.yaml
-        read_only: true
-        bind:
-          create_host_path: false
+       # read_only: true
+       # bind:
+       #   create_host_path: false
       # Persist research artifacts across runs
       - ./artifacts:/app/artifacts
       # Persist the knowledge base across runs
