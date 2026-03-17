@@ -35,7 +35,7 @@ services:
     volumes:
       # Configuration file (defaults to repo example; override with RC_CONFIG_FILE)
       - type: bind
-        source: ${RC_CONFIG_FILE:-./config.researchclaw.example.yaml}
+        #source: ${RC_CONFIG_FILE:-./config.researchclaw.example.yaml}
         target: /app/config.arc.yaml
         read_only: true
         bind:
