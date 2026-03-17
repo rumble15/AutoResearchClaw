@@ -31,6 +31,7 @@ services:
       - S2_API_KEY=${S2_API_KEY:-}
       - HF_TOKEN=${HF_TOKEN:-}
       - PYTHONUNBUFFERED=1
+      - RC_KEEP_ALIVE=${RC_KEEP_ALIVE:-1}
 
     volumes:
       # Configuration file (defaults to repo example; override with RC_CONFIG_FILE)
