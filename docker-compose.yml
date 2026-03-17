@@ -34,9 +34,9 @@ services:
 
     volumes:
       # Configuration file (defaults to repo example; override with RC_CONFIG_FILE)
-      - type: bind
-        source: ${RC_CONFIG_FILE}
-        target: /app/config.arc.yaml
+      #- type: bind
+       # source: ${RC_CONFIG_FILE}
+        #target: /app/config.arc.yaml
         read_only: true
         bind:
           create_host_path: false
