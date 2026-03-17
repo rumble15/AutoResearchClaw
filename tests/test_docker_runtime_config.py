@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 
 
-def test_compose_sets_keep_alive_env_default_on():
+def test_compose_sets_keep_alive_default_enabled():
     compose_path = Path(__file__).resolve().parents[1] / "docker-compose.yml"
     compose = yaml.safe_load(compose_path.read_text(encoding="utf-8"))
     env = compose["services"]["researchclaw"]["environment"]

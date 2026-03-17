@@ -1,5 +1,5 @@
 #!/bin/sh
-set -u
+set -eu
 
 status=0
 researchclaw "$@" || status=$?
